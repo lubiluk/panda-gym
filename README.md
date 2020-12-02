@@ -16,12 +16,14 @@ Using PyPI: TODO: test if it still works
     pip install panda-gym
 
 From source:
+
     cd ~/catkin_ws/src/
     git clone https://github.com/quenting44/panda_description.git
     git clone https://github.com/quenting44/panda-gym.git
-    cd cd ~/catkin_ws/
+    cd ~/catkin_ws/
     rosdep install --from-paths src --ignore-src
-    pip install -e panda-gym
+    pip3 install -r src/panda-gym/requirements.txt
+    catkin build
 
 ## Usage
 

@@ -12,11 +12,6 @@ setup_args = generate_distutils_setup(
     package_dir={'': 'src'},
     long_description=long_description,
     long_description_content_type='text/markdown',
-    include_package_data=True,
-    package_data={
-        'panda_gym': ['envs/assets/*.json']
-    },
-    install_requires=['gym', 'pybullet', 'numpy']
 )
 
 setup(**setup_args)
