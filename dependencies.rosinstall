@@ -1,0 +1,16 @@
+- git:
+    local-name: franka_panda_description
+    uri: https://github.com/qgallouedec/franka_panda_description
+    version: master
+- git:
+    local-name: franka_ros_interface
+    uri: https://github.com/JustaGist/franka_ros_interface
+    version: v0.7.1
+- git:
+    local-name: panda_simulator
+    uri: https://github.com/JustaGist/panda_simulator
+    version: melodic-devel
+- git:
+    local-name: orocos_kinematics_dynamics
+    uri: https://github.com/orocos/orocos_kinematics_dynamics
+    version: b35c424e77ebc5b7e6f1c5e5c34f8a4666fbf5bc

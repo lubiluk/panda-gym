@@ -1,59 +1,51 @@
-# panda-gym
-
-[![PyPI version](https://img.shields.io/pypi/v/panda-gym.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/panda-gym/)
-[![PyPI downloads](https://static.pepy.tech/badge/panda-gym)](https://pypistats.org/packages/panda-gym) 
-[![GitHub](https://img.shields.io/github/license/quenting44/panda-gym.svg)](LICENSE.txt)
-[![Build Status](https://travis-ci.com/quenting44/panda-gym.svg?branch=master)](https://travis-ci.com/quenting44/panda-gym) 
-
-OpenaAI Gym Franka Emika Panda robot environment based on Gazebo and ROS.
-
-![](https://raw.githubusercontent.com/quenting44/panda-gym/master/docs/demo.gif) TODO: update the gif demo
+# panda_gym
 
 ## Installation
 
-Using PyPI: TODO: test if it still works
+If you want to use it with `gazebo11`, you should first install it.
 
-    pip install panda-gym
+Clone the repo in your catkin workspace
 
-From source:
+    cd <catkin_ws>/src
+    git clone https://github.com/qgallouedec/panda_gym
 
-    cd ~/catkin_ws/src/
-    git clone https://github.com/quenting44/panda_description.git
-    git clone https://github.com/quenting44/panda-gym.git
-    cd ~/catkin_ws/
-    rosdep install --from-paths src --ignore-src
-    pip3 install -r src/panda-gym/requirements.txt
+Clone the dependencies
+
+    wstool init
+    wstool merge panda_gym/dependencies.rosinstall
+    wstool up
+
+Install the system dependencies
+
+    cd .. && rosdep install -y --from-path src --ignore-src
+
+If `gazebo11` is installed, it will raise `ERROR: the following rosdeps failed to install apt: command [sudo -H apt-get install -y libgazebo9-dev] failed`. You can safely ignore it.
+
+Build and source the environment:
+
     catkin build
+    source devel/setup.bash
 
 ## Usage
 
-```python
-import gym
-import panda_gym
+Launch the simulated panda robot:
 
-env = gym.make('PandaReach-v0', render=True)
+    roslaunch panda_gazebo panda_world.launch start_moveit:=false
 
-obs = env.reset()
-done = False
-while not done:
-    action = env.action_space.sample() # random action
-    obs, reward, done, info = env.step(action)
+<!-- Then, launch `moveit`:
 
-env.close()
-```
+    roslaunch panda_sim_moveit sim_move_group.launch -->
 
-## Environments
+Then, you can try to interract like in `basic.py`
 
-Following environments are widely inspired from [OpenAI Fetch environments](https://openai.com/blog/ingredients-for-robotics-research/). Video [here](https://youtu.be/TbISn3yu0CM)
+## Notes
 
-`PandaReach-v0`: Panda has to move its end-effector to the desired goal position.
-![](https://raw.githubusercontent.com/quenting44/panda-gym/master/docs/Reach.png) TODO: update this
+### `start_moveit:=false`
 
-`PandaSlide-v0`: Panda has to hit a puck across a long table such that it slides and comes to rest on the desired goal.
-![](https://raw.githubusercontent.com/quenting44/panda-gym/master/docs/Slide.png) TODO: update this
+The `panda_world.launch` file launches `moveit` and a `joint_trajectory_server_emulator` node simultaneously. But `joint_trajectory_server_emulator` takes a long time to start, and `moveit` needs this node to have started in order to work. 
+The loading time is too long, so `moveit` goes into error.
 
-`PandaPush-v0`: Panda has to move a box by pushing it until it reaches a desired goal position.
-![](https://raw.githubusercontent.com/quenting44/panda-gym/master/docs/Push.png) TODO: update this
+    Action client not connected: position_joint_trajectory_controller/follow_joint_trajectory
 
-`PandaPickAndPlace-v0`: Panda has to pick up a box from a table using its gripper and move it to a desired goal above the table.
-![](https://raw.githubusercontent.com/quenting44/panda-gym/master/docs/PickAndPlace.png) TODO: update this
+
+Running `moveit` separately solves this problem.
