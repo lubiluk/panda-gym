@@ -40,3 +40,10 @@ for reward_type in ["sparse", "dense"]:
         kwargs=kwargs,
         max_episode_steps=100,
     )
+
+    register(
+        id="PandaReachCam{}-v1".format(suffix),
+        entry_point="panda_gym.envs:PandaReachCamEnv",
+        kwargs=kwargs,
+        max_episode_steps=100,
+    )
