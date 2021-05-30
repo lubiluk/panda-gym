@@ -541,7 +541,7 @@ class PyBullet:
             position=[x_offset, 0.0, -height / 2],
             specular_color=[0.0, 0.0, 0.0],
             rgba_color=[0.95, 0.95, 0.95, 1],
-            friction=0.1,
+            friction=0.5,
         )
 
     def set_friction(self, body, link, friction):
