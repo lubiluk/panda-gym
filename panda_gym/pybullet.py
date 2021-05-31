@@ -557,3 +557,12 @@ class PyBullet:
             linkIndex=link,
             lateralFriction=friction,
         )
+
+    def set_hidden(self, body, hidden):
+        color = list(p.getVisualShapeData(self._bodies_idx[body])[0][-1])
+        color[-1] = 0 if hidden else 1
+        p.changeVisualShape(
+            objectUniqueId=self._bodies_idx[body], 
+            linkIndex=-1, 
+            rgbaColor=color
+        )
