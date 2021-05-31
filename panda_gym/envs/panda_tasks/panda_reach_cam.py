@@ -39,6 +39,9 @@ class PandaReachCamEnv(PandaReachEnv):
                         camera=spaces.Box(
                             -np.inf, np.inf, shape=obs["observation"]["camera"].shape
                         ),
+                        depth=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["depth"].shape
+                        ),
                     )
                 ),
                 desired_goal=spaces.Box(-np.inf, np.inf, shape=achieved_goal_shape),

@@ -558,11 +558,21 @@ class PyBullet:
             lateralFriction=friction,
         )
 
-    def set_hidden(self, body, hidden):
+    @contextmanager
+    def object_hidden(self, body, hidden=True):
         color = list(p.getVisualShapeData(self._bodies_idx[body])[0][-1])
+        alpha = color[-1]
         color[-1] = 0 if hidden else 1
         p.changeVisualShape(
             objectUniqueId=self._bodies_idx[body], 
             linkIndex=-1, 
             rgbaColor=color
         )
+        yield
+        color[-1] = alpha
+        p.changeVisualShape(
+            objectUniqueId=self._bodies_idx[body], 
+            linkIndex=-1, 
+            rgbaColor=color
+        )
+

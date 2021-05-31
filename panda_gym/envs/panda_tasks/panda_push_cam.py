@@ -10,9 +10,11 @@ from panda_gym.pybullet import PyBullet
 
 class PandaPushCamEnv(PandaPushEnv):
     def __init__(self, render=False, reward_type="sparse"):
-        self._view_mat = p.computeViewMatrix(   
+        self._view_mat = p.computeViewMatrix(
             # [0.7, 0, 0.7], [0.45, 0, 0.45], [0.0,0.0,1.0]
-            [1.0, 0, 1.0], [0.7, 0, 0.75], [0.0,0.0,1.0]
+            [1.0, 0, 1.0],
+            [0.7, 0, 0.75],
+            [0.0, 0.0, 1.0],
         )
         self._projection_mat = p.computeProjectionMatrixFOV(43.3, 1.0, 0.2, 2.0)
 
@@ -35,6 +37,15 @@ class PandaPushCamEnv(PandaPushEnv):
                         camera=spaces.Box(
                             -np.inf, np.inf, shape=obs["observation"]["camera"].shape
                         ),
+                        depth=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["depth"].shape
+                        ),
+                        goal_camera=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["goal_camera"].shape
+                        ),
+                        goal_depth=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["goal_depth"].shape
+                        ),
                     )
                 ),
                 desired_goal=spaces.Box(-np.inf, np.inf, shape=achieved_goal_shape),
@@ -48,15 +59,30 @@ class PandaPushCamEnv(PandaPushEnv):
 
     def _get_obs(self):
         obs = super()._get_obs()
-        self.sim.set_hidden("target", True)
-        cam = p.getCameraImage(
-            width=100,
-            height=100,
-            viewMatrix=self._view_mat,
-            projectionMatrix=self._projection_mat,
-        )
-        self.sim.set_hidden("target", False)
 
-        obs["observation"] = {"camera": cam[2], "depth": cam[3], "observation": obs["observation"]}
+        with self.sim.object_hidden("target"):
+            cam = p.getCameraImage(
+                width=100,
+                height=100,
+                viewMatrix=self._view_mat,
+                projectionMatrix=self._projection_mat,
+            )
+
+        with self.sim.object_hidden("object", True):
+            with self.sim.object_hidden("target", False):
+                tcam = p.getCameraImage(
+                    width=100,
+                    height=100,
+                    viewMatrix=self._view_mat,
+                    projectionMatrix=self._projection_mat,
+                )
+
+        obs["observation"] = {
+            "camera": cam[2],
+            "depth": cam[3],
+            "goal_camera": tcam[2],
+            "goal_depth": tcam[3],
+            "observation": obs["observation"],
+        }
 
         return obs
