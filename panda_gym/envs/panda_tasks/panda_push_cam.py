@@ -29,10 +29,10 @@ class PandaPushCamEnv(PandaPushEnv):
             dict(
                 observation=spaces.Dict(
                     dict(
-                        observation=spaces.Box(
+                        robot_state=spaces.Box(
                             -np.inf,
                             np.inf,
-                            shape=obs["observation"]["observation"].shape,
+                            shape=obs["observation"]["robot_state"].shape,
                         ),
                         camera=spaces.Box(
                             -np.inf, np.inf, shape=obs["observation"]["camera"].shape
@@ -48,8 +48,8 @@ class PandaPushCamEnv(PandaPushEnv):
                         ),
                     )
                 ),
-                desired_goal=spaces.Box(-np.inf, np.inf, shape=achieved_goal_shape),
-                achieved_goal=spaces.Box(-np.inf, np.inf, shape=desired_goal_shape),
+                desired_goal=spaces.Box(-np.inf, np.inf, shape=desired_goal_shape),
+                achieved_goal=spaces.Box(-np.inf, np.inf, shape=achieved_goal_shape),
             )
         )
         self.action_space = self.robot.action_space
@@ -82,7 +82,7 @@ class PandaPushCamEnv(PandaPushEnv):
             "depth": cam[3],
             "goal_camera": tcam[2],
             "goal_depth": tcam[3],
-            "observation": obs["observation"],
+            "robot_state": self.robot.get_obs(),
         }
 
         return obs
