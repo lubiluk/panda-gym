@@ -14,11 +14,13 @@ class Push(Task):
         goal_xy_range=0.3,
         obj_xy_range=0.3,
         seed=None,
+        object_shape="cube"
     ):
         self.sim = sim
         self.reward_type = reward_type
         self.distance_threshold = distance_threshold
         self.object_size = 0.04
+        self.object_shape = object_shape
         self.np_random, self.seed = utils.seeding.np_random(seed)
         self.goal_range_low = np.array([-goal_xy_range / 2, -goal_xy_range / 2, 0])
         self.goal_range_high = np.array([goal_xy_range / 2, goal_xy_range / 2, 0])
@@ -31,30 +33,49 @@ class Push(Task):
     def _create_scene(self):
         self.sim.create_plane(z_offset=-0.4)
         self.sim.create_table(length=1.1, width=0.7, height=0.4, x_offset=-0.3)
-        self.sim.create_box(
-            body_name="object",
-            half_extents=[
-                self.object_size / 2,
-                self.object_size / 2,
-                self.object_size / 2,
-            ],
-            mass=2,
-            position=[0.0, 0.0, self.object_size / 2],
-            rgba_color=[0.9, 0.1, 0.1, 1],
-            friction=1,  # increase friction. For some reason, it helps a lot learning
-        )
-        self.sim.create_box(
-            body_name="target",
-            half_extents=[
-                self.object_size / 2,
-                self.object_size / 2,
-                self.object_size / 2,
-            ],
-            mass=0.0,
-            ghost=True,
-            position=[0.0, 0.0, self.object_size / 2],
-            rgba_color=[0.9, 0.1, 0.1, 0.3],
-        )
+
+        if self.object_shape == "sphere":
+            self.sim.create_sphere(
+                body_name="object",
+                radius = self.object_size / 2,
+                mass=2,
+                position=[0.0, 0.0, self.object_size / 2],
+                rgba_color=[0.9, 0.1, 0.1, 1],
+                friction=1,  # increase friction. For some reason, it helps a lot learning
+            )
+            self.sim.create_sphere(
+                body_name="target",
+                radius = self.object_size / 2,
+                mass=0.0,
+                ghost=True,
+                position=[0.0, 0.0, self.object_size / 2],
+                rgba_color=[0.9, 0.1, 0.1, 0.3],
+            )
+        else:
+            self.sim.create_box(
+                body_name="object",
+                half_extents=[
+                    self.object_size / 2,
+                    self.object_size / 2,
+                    self.object_size / 2,
+                ],
+                mass=2,
+                position=[0.0, 0.0, self.object_size / 2],
+                rgba_color=[0.9, 0.1, 0.1, 1],
+                friction=1,  # increase friction. For some reason, it helps a lot learning
+            )
+            self.sim.create_box(
+                body_name="target",
+                half_extents=[
+                    self.object_size / 2,
+                    self.object_size / 2,
+                    self.object_size / 2,
+                ],
+                mass=0.0,
+                ghost=True,
+                position=[0.0, 0.0, self.object_size / 2],
+                rgba_color=[0.9, 0.1, 0.1, 0.3],
+            )
 
     def get_goal(self):
         return self.goal.copy()
