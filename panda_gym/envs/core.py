@@ -56,6 +56,9 @@ class PyBulletRobot:
         """Returns the position of a link as (x, y, z)"""
         return self.sim.get_link_position(self.body_name, link)
 
+    def get_link_orientation(self, link):
+        return self.sim.get_link_orientation(self.body_name, link)
+
     def get_link_velocity(self, link):
         """Returns the velocity of a link as (vx, vy, vz)"""
         return self.sim.get_link_velocity(self.body_name, link)

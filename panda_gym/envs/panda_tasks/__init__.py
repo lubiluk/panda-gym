@@ -5,3 +5,4 @@ from panda_gym.envs.panda_tasks.panda_pick_and_place import PandaPickAndPlaceEnv
 from panda_gym.envs.panda_tasks.panda_stack import PandaStackEnv
 from panda_gym.envs.panda_tasks.panda_reach_cam import PandaReachCamEnv
 from panda_gym.envs.panda_tasks.panda_push_cam import PandaPushCamEnv
+from panda_gym.envs.panda_tasks.free_panda_push import FreePandaPushEnv
