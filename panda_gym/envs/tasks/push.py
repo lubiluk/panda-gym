@@ -98,12 +98,13 @@ class Push(Task):
 
     def get_achieved_goal(self):
         object_position = np.array(self.sim.get_base_position("object"))
-        return object_position
+        object_velocity = np.array(self.sim.get_base_velocity("object"))
+        return np.concatenate((object_position, object_velocity))
 
     def reset(self):
         self.goal = self._sample_goal()
         object_position = self._sample_object()
-        self.sim.set_base_pose("target", self.goal, [0, 0, 0, 1])
+        self.sim.set_base_pose("target", self.goal[:3], [0, 0, 0, 1])
         self.sim.set_base_pose("object", object_position, [0, 0, 0, 1])
 
     def _sample_goal(self):
@@ -111,7 +112,7 @@ class Push(Task):
         goal = [0.0, 0.0, self.object_size / 2]  # z offset for the cube center
         noise = self.np_random.uniform(self.goal_range_low, self.goal_range_high)
         goal += noise
-        return goal
+        return np.concatenate((goal, (0,0,0)))
 
     def _sample_object(self):
         """Randomize start position of object."""
@@ -121,12 +122,17 @@ class Push(Task):
         return object_position
 
     def is_success(self, achieved_goal, desired_goal):
-        d = distance(achieved_goal, desired_goal)
+        if not np.allclose(achieved_goal[3:], 0, atol=0.01):
+                return False
+
+        d = distance(achieved_goal[:3], desired_goal[:3])
         return (d < self.distance_threshold).astype(np.float32)
 
     def compute_reward(self, achieved_goal, desired_goal, info):
-        d = distance(achieved_goal, desired_goal)
+        d = distance(achieved_goal[:3], desired_goal[:3])
         if self.reward_type == "sparse":
+            if not np.allclose(achieved_goal[3:], 0, atol=0.01):
+                return -1
             return -(d > self.distance_threshold).astype(np.float32)
         else:
             return -d
