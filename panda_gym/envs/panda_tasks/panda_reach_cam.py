@@ -10,9 +10,17 @@ from panda_gym.pybullet import PyBullet
 
 class PandaReachCamEnv(PandaReachEnv):
     def __init__(self, render=False, reward_type="sparse"):
-        self._view_mat = p.computeViewMatrix(   
+        self._view_mat1 = p.computeViewMatrix(
             # [0.7, 0, 0.7], [0.45, 0, 0.45], [0.0,0.0,1.0]
-            [1.0, 0, 1.0], [0.7, 0, 0.75], [0.0,0.0,1.0]
+            [0.0, 0.8, 0.8],
+            [0.0, 0, 0.0],
+            [0.0, 0.0, 1.0],
+        )
+        self._view_mat2 = p.computeViewMatrix(
+            # [0.7, 0, 0.7], [0.45, 0, 0.45], [0.0,0.0,1.0]
+            [0.0, -0.8, 0.8],
+            [0.0, 0, 0.0],
+            [0.0, 0.0, 1.0],
         )
         self._projection_mat = p.computeProjectionMatrixFOV(43.3, 1.0, 0.2, 2.0)
 
@@ -36,11 +44,17 @@ class PandaReachCamEnv(PandaReachEnv):
                             np.inf,
                             shape=obs["observation"]["observation"].shape,
                         ),
-                        camera=spaces.Box(
-                            -np.inf, np.inf, shape=obs["observation"]["camera"].shape
+                        camera1=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["camera1"].shape
                         ),
-                        depth=spaces.Box(
-                            -np.inf, np.inf, shape=obs["observation"]["depth"].shape
+                        depth1=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["depth1"].shape
+                        ),
+                        camera2=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["camera2"].shape
+                        ),
+                        depth2=spaces.Box(
+                            -np.inf, np.inf, shape=obs["observation"]["depth2"].shape
                         ),
                     )
                 ),
@@ -55,13 +69,25 @@ class PandaReachCamEnv(PandaReachEnv):
 
     def _get_obs(self):
         obs = super()._get_obs()
-        cam = p.getCameraImage(
+        cam1 = p.getCameraImage(
             width=100,
             height=100,
-            viewMatrix=self._view_mat,
+            viewMatrix=self._view_mat1,
+            projectionMatrix=self._projection_mat,
+        )
+        cam2 = p.getCameraImage(
+            width=100,
+            height=100,
+            viewMatrix=self._view_mat2,
             projectionMatrix=self._projection_mat,
         )
 
-        obs["observation"] = {"camera": cam[2], "depth": cam[3], "observation": obs["observation"]}
+        obs["observation"] = {
+            "camera1": cam1[2],
+            "depth1": cam1[3],
+            "camera2": cam2[2],
+            "depth2": cam2[3],
+            "observation": obs["observation"],
+        }
 
         return obs
