@@ -40,6 +40,11 @@ class PandaPushCamEnv(PandaPushEnv):
                             np.inf,
                             shape=obs["observation"]["robot_state"].shape,
                         ),
+                        full_observation=spaces.Box(
+                            -np.inf,
+                            np.inf,
+                            shape=obs["observation"]["full_observation"].shape,
+                        ),
                         camera1=spaces.Box(
                             -np.inf, np.inf, shape=obs["observation"]["camera1"].shape
                         ),
@@ -125,6 +130,7 @@ class PandaPushCamEnv(PandaPushEnv):
             "goal_camera2": tcam2[2],
             "goal_depth2": tcam2[3],
             "robot_state": obs["observation"][:6],
+            "full_observation": obs["observation"],
         }
 
         return obs
