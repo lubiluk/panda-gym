@@ -124,7 +124,7 @@ class PandaPushCamEnv(PandaPushEnv):
             "goal_depth1": tcam1[3],
             "goal_camera2": tcam2[2],
             "goal_depth2": tcam2[3],
-            "robot_state": self.robot.get_obs(),
+            "robot_state": obs["observation"][:6],
         }
 
         return obs
